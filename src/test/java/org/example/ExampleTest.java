@@ -26,6 +26,7 @@ import co.cask.cdap.etl.proto.v2.ETLBatchConfig;
 import co.cask.cdap.etl.proto.v2.ETLPlugin;
 import co.cask.cdap.etl.proto.v2.ETLStage;
 import co.cask.cdap.proto.artifact.ArtifactRange;
+import co.cask.cdap.proto.artifact.ArtifactSummary;
 import co.cask.cdap.proto.id.ArtifactId;
 import co.cask.cdap.proto.id.NamespaceId;
 import co.cask.cdap.test.TestConfiguration;
@@ -33,6 +34,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.Set;
 
@@ -46,7 +48,11 @@ public class ExampleTest extends HydratorTestBase {
 
   protected static final ArtifactId DATAPIPELINE_ARTIFACT_ID =
     NamespaceId.DEFAULT.artifact("data-pipeline", "4.0.0");
+
+  protected static final ArtifactSummary DATAPIPELINE_ARTIFACT = new ArtifactSummary("data-pipeline", "4.0.0");
+
   private static final String OUTPUT_COLUMN = "input";
+  private static final String APP_NAME = "ExampleTest";
 
   @BeforeClass
   public static void setupTest() throws Exception {
@@ -75,5 +81,65 @@ public class ExampleTest extends HydratorTestBase {
       .addConnection("source", "sparkcompute")
       .addConnection("sparkcompute", "sink")
       .build();
+  }
+
+  @Test
+  public void testExample() throws Exception {
+    /**
+     * Create a mocked pipeline and deploy an instance of the application.
+     */
+
+//    ETLBatchConfig etlConfig = buildETLBatchConfig("source", "sink");
+//    AppRequest<ETLBatchConfig> appRequest = new AppRequest<>(DATAPIPELINE_ARTIFACT, etlConfig);
+//    ApplicationId appId = NamespaceId.DEFAULT.app(APP_NAME);
+//    ApplicationManager appManager = deployApplication(appId.toId(), appRequest);
+
+    /**
+     * Get handle to the Table Dataset embedded within the pipeline.
+     */
+//    DataSetManager<Table> inputManager = getDataset("source");
+
+    /**
+     * Create the input record to be written to source -- which is a table dataset.
+     */
+//    List<StructuredRecord> input = ImmutableList.of(
+//      StructuredRecord.builder(SOURCE_SCHEMA_MULTIPLE).set(COLUMN_TOKENIZED, SENTENCE1).set(NAME_COLUMN, "CDAP")
+//        .build(),
+//      StructuredRecord.builder(SOURCE_SCHEMA_MULTIPLE).set(COLUMN_TOKENIZED, SENTENCE2).set(NAME_COLUMN, "Hydrator")
+//        .build(),
+//      StructuredRecord.builder(SOURCE_SCHEMA_MULTIPLE).set(COLUMN_TOKENIZED, SENTENCE3).set(NAME_COLUMN, "Studio")
+//        .build(),
+//      StructuredRecord.builder(SOURCE_SCHEMA_MULTIPLE).set(COLUMN_TOKENIZED, SENTENCE4).set(NAME_COLUMN, "Plugins")
+//        .build());
+
+    /**
+     * Write the record to the input dataset.
+     */
+//   MockSource.writeInput(inputManager, input);
+
+    /**
+     * Manually trigger the workflow to kick-off the pipeline.
+     */
+//  WorkflowManager workflowManager = appManager.getWorkflowManager(SmartWorkflow.NAME);
+//  workflowManager.start();
+//  workflowManager.waitForFinish(5, TimeUnit.MINUTES);
+
+    /**
+     * Get handle to the output dataset to validate the results.
+     */
+//    DataSetManager<Table> texts = getDataset("sink");
+//    List<StructuredRecord> output = MockSink.readOutput(texts);
+//    Set<List> results = new HashSet<>();
+//    for (StructuredRecord structuredRecord : output) {
+//      results.add((ArrayList) structuredRecord.get(OUTPUT_COLUMN));
+//    }
+
+    /**
+     * Validate against expected results.
+     */
+//    //Create expected data
+//    Set<List<String>> expected = getExpectedData();
+//    Assert.assertEquals(expected, results);
+//    Assert.assertEquals(4, output.size());
   }
 }
