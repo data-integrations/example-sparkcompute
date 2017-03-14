@@ -271,9 +271,7 @@
                   var config = {
                     "parents": [
                       "system:cdap-data-pipeline" + etlRange,
-                      "system:cdap-data-streams" + etlRange,
-                      "system:cdap-etl-batch" + etlRange,
-                      "system:cdap-etl-realtime" + etlRange
+                      "system:cdap-data-streams" + etlRange
                     ],
                     "properties": {}
                   }
