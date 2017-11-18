@@ -1,5 +1,5 @@
 # Example-sparkcompute
-<a href="https://cdap-users.herokuapp.com/"><img alt="Join CDAP community" src="https://cdap-users.herokuapp.com/badge.svg?t=1"/></a> [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+<a href="https://cdap-users.herokuapp.com/"><img alt="Join CDAP community" src="https://cdap-users.herokuapp.com/badge.svg?t=1"/></a> [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) <img  alt="Not Available in Cask Market" src="https://cdap-users.herokuapp.com/assets/cm-notavailable.svg"/> <img  alt="CDAP Spark Compute" src="https://cdap-users.herokuapp.com/assets/cdap-sparkcompute.svg"/>
 
 This is a example for Spark Compute Plugin that one can make a copy of to get started with building Spark Compute plugin.
 
