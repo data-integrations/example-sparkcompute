@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Cask Data, Inc.
+ * Copyright © 2017-2019 Cask Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,22 +16,22 @@
 
 package org.example;
 
-import co.cask.cdap.api.artifact.ArtifactVersion;
-import co.cask.cdap.datapipeline.DataPipelineApp;
-import co.cask.cdap.etl.api.batch.SparkCompute;
-import co.cask.cdap.etl.mock.batch.MockSink;
-import co.cask.cdap.etl.mock.batch.MockSource;
-import co.cask.cdap.etl.mock.test.HydratorTestBase;
-import co.cask.cdap.etl.proto.v2.ETLBatchConfig;
-import co.cask.cdap.etl.proto.v2.ETLPlugin;
-import co.cask.cdap.etl.proto.v2.ETLStage;
-import co.cask.cdap.proto.artifact.ArtifactRange;
-import co.cask.cdap.proto.artifact.ArtifactSummary;
-import co.cask.cdap.proto.id.ArtifactId;
-import co.cask.cdap.proto.id.NamespaceId;
-import co.cask.cdap.test.TestConfiguration;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import io.cdap.cdap.api.artifact.ArtifactRange;
+import io.cdap.cdap.api.artifact.ArtifactSummary;
+import io.cdap.cdap.api.artifact.ArtifactVersion;
+import io.cdap.cdap.datapipeline.DataPipelineApp;
+import io.cdap.cdap.etl.api.batch.SparkCompute;
+import io.cdap.cdap.etl.mock.batch.MockSink;
+import io.cdap.cdap.etl.mock.batch.MockSource;
+import io.cdap.cdap.etl.mock.test.HydratorTestBase;
+import io.cdap.cdap.etl.proto.v2.ETLBatchConfig;
+import io.cdap.cdap.etl.proto.v2.ETLPlugin;
+import io.cdap.cdap.etl.proto.v2.ETLStage;
+import io.cdap.cdap.proto.id.ArtifactId;
+import io.cdap.cdap.proto.id.NamespaceId;
+import io.cdap.cdap.test.TestConfiguration;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -59,7 +59,7 @@ public class ExampleTest extends HydratorTestBase {
     // add the artifact for etl batch app
     setupBatchArtifacts(DATAPIPELINE_ARTIFACT_ID, DataPipelineApp.class);
     Set<ArtifactRange> parents = ImmutableSet.of(
-      new ArtifactRange(NamespaceId.DEFAULT, DATAPIPELINE_ARTIFACT_ID.getArtifact(),
+      new ArtifactRange(NamespaceId.DEFAULT.getNamespace(), DATAPIPELINE_ARTIFACT_ID.getArtifact(),
                         new ArtifactVersion(DATAPIPELINE_ARTIFACT_ID.getVersion()), true,
                         new ArtifactVersion(DATAPIPELINE_ARTIFACT_ID.getVersion()), true));
     addPluginArtifact(NamespaceId.DEFAULT.artifact("spark-plugins", "1.0.0"), parents,
