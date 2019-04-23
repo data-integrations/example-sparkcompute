@@ -22,7 +22,7 @@ These files can be used to deploy your plugins.
 
 ## UI Integration
 
-The Cask Hydrator UI displays each plugin property as a simple textbox. To customize how the plugin properties
+The Pipeline Studio UI displays each plugin property as a simple textbox. To customize how the plugin properties
 are displayed in the UI, you can place a configuration file in the ``widgets`` directory.
 The file must be named following a convention of ``[plugin-name]-[plugin-type].json``.
 
@@ -80,6 +80,5 @@ Cask is a trademark of Cask Data, Inc. All rights reserved.
 Apache, Apache HBase, and HBase are trademarks of The Apache Software Foundation. Used with
 permission. No endorsement by The Apache Software Foundation is implied by the use of these marks.
 
-.. |(Hydrator)| image:: http://cask.co/wp-content/uploads/hydrator_logo_cdap1.png
 
 

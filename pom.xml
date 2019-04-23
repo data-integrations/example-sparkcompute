@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright © 2016-2017 Example Data, Inc.
+  ~ Copyright © 2016-2019 Cask Data, Inc.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License"); you may not
   ~ use this file except in compliance with the License. You may obtain a copy of
@@ -20,7 +20,7 @@
 
   <groupId>org.example</groupId>
   <artifactId>example</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>1.1.0</version>
   <packaging>jar</packaging>
 
   <name>Example Spark Compute Plugin</name>
@@ -28,15 +28,13 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <cdap.version>4.0.0</cdap.version>
+    <cdap.version>6.0.0-SNAPSHOT</cdap.version>
     <guava.version>19.0</guava.version>
-    <spark.version>1.6.1</spark.version>
+    <spark.version>2.1.3</spark.version>
     <kafka.version>0.8.2.2</kafka.version>
     <hadoop.version>2.3.0</hadoop.version>
-    <widgets.dir>widgets</widgets.dir>
-    <docs.dir>docs</docs.dir>
-    <etl.versionRange>[4.0.0,10.0.0-SNAPSHOT)</etl.versionRange>
-    <main.basedir>${project.basedir}</main.basedir>
+    <data.stream.parent>system:cdap-data-streams[6.0.0-SNAPSHOT,7.0.0-SNAPSHOT)</data.stream.parent>
+    <data.pipeline.parent>system:cdap-data-pipeline[6.0.0-SNAPSHOT,7.0.0-SNAPSHOT)</data.pipeline.parent>
   </properties>
 
   <licenses>
@@ -58,9 +56,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:https://github.com/example/example-project.git</connection>
-    <developerConnection>scm:git:git@github.com:example/example-sparkcompute.git</developerConnection>
-    <url>https://github.com/example/example-sparkcompute.git</url>
+    <connection>scm:git:https://github.com/data-integrations/example-project.git</connection>
+    <developerConnection>scm:git:git@github.com:data-integrations/example-sparkcompute.git</developerConnection>
+    <url>https://github.com/example/data-integrations-sparkcompute.git</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -80,7 +78,7 @@
   </distributionManagement>
 
   <issueManagement>
-    <url>https://issues.example.org/browse/CDAP</url>
+    <url>https://issues.example.org</url>
   </issueManagement>
 
   <repositories>
@@ -96,31 +94,31 @@
 
   <dependencies>
     <dependency>
-      <groupId>co.cask.cdap</groupId>
+      <groupId>io.cdap.cdap</groupId>
       <artifactId>cdap-etl-api</artifactId>
       <version>${cdap.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>co.cask.cdap</groupId>
+      <groupId>io.cdap.cdap</groupId>
       <artifactId>cdap-data-pipeline</artifactId>
       <version>${cdap.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>co.cask.cdap</groupId>
+      <groupId>io.cdap.cdap</groupId>
       <artifactId>cdap-etl-api-spark</artifactId>
       <version>${cdap.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>co.cask.cdap</groupId>
+      <groupId>io.cdap.cdap</groupId>
       <artifactId>hydrator-test</artifactId>
       <version>${cdap.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>co.cask.cdap</groupId>
+      <groupId>io.cdap.cdap</groupId>
       <artifactId>cdap-formats</artifactId>
       <version>${cdap.version}</version>
     </dependency>
@@ -186,7 +184,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-streaming-kafka_2.10</artifactId>
+      <artifactId>spark-streaming-kafka-0-10_2.11</artifactId>
       <version>${spark.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -218,7 +216,7 @@
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <version>2.3.7</version>
+          <version>4.2.0</version>
           <extensions>true</extensions>
           <configuration>
             <instructions>
@@ -239,92 +237,21 @@
           </executions>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.7</version>
+          <groupId>io.cdap</groupId>
+          <artifactId>cdap-maven-plugin</artifactId>
+          <version>1.1.0</version>
+          <configuration>
+            <cdapArtifacts>
+              <parent>${data.pipeline.parent}</parent>
+              <parent>${data.stream.parent}</parent>
+            </cdapArtifacts>
+          </configuration>
           <executions>
-            <!-- Create the config file for artifact which can be used to deploy the artifact.
-                 Sets the parents field to system:cdap-etl-batch and system:cdap-etl-realtime with whatever
-                 version range is set in the etl.versionRange property.
-                 also sets a widget and doc property for each file contained in the widgets and docs directories. -->
             <execution>
               <id>create-artifact-config</id>
               <phase>prepare-package</phase>
-              <configuration>
-                <target>
-                  <script language="javascript"> <![CDATA[
-
-                  // for some reason, project.basedir evaluates to null if we just get the property here.
-                  // so we set main.basedir to project.basedir in the pom properties, then main.basedir is used here
-                  // where it evaluates correctly for whatever reason
-                  var baseDir = project.getProperty("main.basedir");
-                  var targetDir = project.getProperty("project.build.directory");
-                  var artifactId = project.getProperty("project.artifactId");
-                  var version = project.getProperty("project.version");
-
-                  var cfgFile = new java.io.File(targetDir, artifactId + "-" + version + ".json");
-                  if (!cfgFile.exists()) {
-                    cfgFile.createNewFile();
-                  }
-
-                  var etlRange = project.getProperty("etl.versionRange");
-                  var config = {
-                    "parents": [
-                      "system:cdap-data-pipeline" + etlRange,
-                      "system:cdap-data-streams" + etlRange,
-                      "system:cdap-etl-batch" + etlRange,
-                      "system:cdap-etl-realtime" + etlRange
-                    ],
-                    "properties": {}
-                  }
-
-                  // look in widgets directory for widget config for each plugin
-                  var widgetsDir = new java.io.File(baseDir, project.getProperty("widgets.dir"));
-                  if (widgetsDir.isDirectory()) {
-                    var widgetsFiles = widgetsDir.listFiles();
-                    for (i = 0; i < widgetsFiles.length; i++) {
-                      var widgetsFile = widgetsFiles[i];
-                      if (widgetsFile.isFile()) {
-                        var propertyName = "widgets." + widgetsFile.getName();
-                        // if the filename ends with .json
-                        if (propertyName.indexOf(".json", propertyName.length - 5) !== -1) {
-                          // strip the .json
-                          propertyName = propertyName.slice(0, -5);
-                          var contents = new java.lang.String(java.nio.file.Files.readAllBytes(widgetsFile.toPath()), java.nio.charset.StandardCharsets.UTF_8);
-                          var contentsAsJson = JSON.parse(contents);
-                          config.properties[propertyName] = JSON.stringify(contentsAsJson);
-                        }
-                      }
-                    }
-                  }
-
-                  // look in the docs directory for docs for each plugin
-                  var docsDir = new java.io.File(baseDir, project.getProperty("docs.dir"));
-                  if (docsDir.isDirectory()) {
-                    var docFiles = docsDir.listFiles();
-                    for (i = 0; i < docFiles.length; i++) {
-                      var docFile = docFiles[i];
-                      if (docFile.isFile()) {
-                        var propertyName = "doc." + docFile.getName();
-                        // if the filename ends with .md
-                        if (propertyName.indexOf(".md", propertyName.length - 3) !== -1) {
-                          // strip the extension
-                          propertyName = propertyName.slice(0, -3);
-                          var contents = new java.lang.String(java.nio.file.Files.readAllBytes(docFile.toPath()), java.nio.charset.StandardCharsets.UTF_8);
-                          config.properties[propertyName] = contents + "";
-                        }
-                      }
-                    }
-                  }
-
-                  var fw = new java.io.BufferedWriter(new java.io.FileWriter(cfgFile.getAbsoluteFile()));
-                  fw.write(JSON.stringify(config, null, 2));
-                  fw.close();
-                ]]></script>
-                </target>
-              </configuration>
               <goals>
-                <goal>run</goal>
+                <goal>create-plugin-json</goal>
               </goals>
             </execution>
           </executions>
@@ -345,6 +272,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>io.cdap</groupId>
+        <artifactId>cdap-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
@@ -398,7 +329,6 @@
               </execution>
             </executions>
           </plugin>
-
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
